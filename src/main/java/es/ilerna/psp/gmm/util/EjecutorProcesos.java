@@ -151,6 +151,53 @@ public class EjecutorProcesos {
     }
 
     /**
+     * Devuelve el classpath de GMM-Java con todas sus rutas en forma absoluta.
+     *
+     * Se usa para lanzar las clases auxiliares (paquete worker) como procesos
+     * hijos sin escribir ninguna ruta fija del ordenador: el hijo usa el mismo
+     * classpath que el programa que se está ejecutando ahora mismo.
+     * Si el classpath fuera relativo (por ejemplo "target/classes") y el hijo se
+     * ejecutara en otro directorio de trabajo, no encontraría la clase.
+     *
+     * @return classpath con rutas absolutas
+     */
+    public static String getClasspathAbsoluto() {
+        String classpath = System.getProperty("java.class.path");
+        if (classpath == null || classpath.isEmpty()) {
+            return new File(".").getAbsolutePath();
+        }
+        String[] rutas = classpath.split(File.pathSeparator);
+        StringBuilder resultado = new StringBuilder();
+        for (int i = 0; i < rutas.length; i++) {
+            if (i > 0) {
+                resultado.append(File.pathSeparator);
+            }
+            resultado.append(new File(rutas[i]).getAbsolutePath());
+        }
+        return resultado.toString();
+    }
+
+    /**
+     * Crea el comando para lanzar una clase Java del proyecto como proceso hijo:
+     * java -cp CLASSPATH clase arg1 arg2 ...
+     *
+     * @param clase      nombre completo de la clase, por ejemplo "es.ilerna.psp.gmm.worker.EcoLector"
+     * @param argumentos argumentos que recibirá el main del hijo (pueden no ponerse)
+     * @return lista con el comando completo
+     */
+    public static ArrayList<String> crearComandoJava(String clase, String... argumentos) {
+        ArrayList<String> comando = new ArrayList<>();
+        comando.add(getRutaJava());
+        comando.add("-cp");
+        comando.add(getClasspathAbsoluto());
+        comando.add(clase);
+        for (int i = 0; i < argumentos.length; i++) {
+            comando.add(argumentos[i]);
+        }
+        return comando;
+    }
+
+    /**
      * Convierte la lista del comando en un texto legible, solo para mostrarlo.
      * Al proceso siempre se le pasa la lista, nunca este texto.
      *
@@ -172,6 +219,26 @@ public class EjecutorProcesos {
             }
         }
         return texto.toString();
+    }
+
+    /**
+     * Igual que comandoComoTexto, pero más corto para tablas y logs: la ruta
+     * completa de java se muestra como "java" y el classpath como "&lt;classpath&gt;".
+     *
+     * @param comando lista con programa y argumentos
+     * @return texto resumido del comando
+     */
+    public static String comandoResumido(List<String> comando) {
+        ArrayList<String> copia = new ArrayList<>(comando);
+        if (!copia.isEmpty() && copia.get(0).equals(getRutaJava())) {
+            copia.set(0, "java");
+        }
+        for (int i = 0; i < copia.size() - 1; i++) {
+            if (copia.get(i).equals("-cp")) {
+                copia.set(i + 1, "<classpath>");
+            }
+        }
+        return comandoComoTexto(copia);
     }
 
     /**

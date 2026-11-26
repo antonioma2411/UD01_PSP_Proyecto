@@ -25,3 +25,7 @@ nb-configuration.xml
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Ficheros generados al ejecutar el programa (las pruebas se copian a evidencias/)
+logs/*.log
+resultados/*.txt

@@ -141,36 +141,9 @@ public class EjecutorMultiplataforma {
      * Comando para lanzar ProgramaAuxiliar: java -cp CLASSPATH Clase nombre codigo
      */
     private ArrayList<String> comandoClaseAuxiliar(String nombre, int codigoSalida) {
-        ArrayList<String> comando = new ArrayList<>();
-        comando.add(EjecutorProcesos.getRutaJava());
-        comando.add("-cp");
-        comando.add(getClasspathAbsoluto());                  // mismo classpath que GMM-Java
-        comando.add(CLASE_AUXILIAR);
-        comando.add(nombre);                                  // un solo argumento aunque tenga espacios
-        comando.add(String.valueOf(codigoSalida));
-        return comando;
-    }
-
-    /**
-     * Devuelve el classpath de GMM-Java con todas sus rutas en forma absoluta.
-     *
-     * Si el classpath fuera relativo (por ejemplo "target/classes") y el hijo se
-     * ejecutara en otro directorio de trabajo, no encontraría la clase auxiliar.
-     */
-    private String getClasspathAbsoluto() {
-        String classpath = System.getProperty("java.class.path");
-        if (classpath == null || classpath.isEmpty()) {
-            return new File(".").getAbsolutePath();
-        }
-        String[] rutas = classpath.split(File.pathSeparator);
-        StringBuilder resultado = new StringBuilder();
-        for (int i = 0; i < rutas.length; i++) {
-            if (i > 0) {
-                resultado.append(File.pathSeparator);
-            }
-            resultado.append(new File(rutas[i]).getAbsolutePath());
-        }
-        return resultado.toString();
+        // El nombre va en un solo argumento aunque tenga espacios.
+        // Se usa el mismo classpath que GMM-Java (ver EjecutorProcesos.getClasspathAbsoluto)
+        return EjecutorProcesos.crearComandoJava(CLASE_AUXILIAR, nombre, String.valueOf(codigoSalida));
     }
 
     // ------------------------------------------------------------------
