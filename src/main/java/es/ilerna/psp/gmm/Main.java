@@ -1,10 +1,12 @@
 package es.ilerna.psp.gmm;
 
+import es.ilerna.psp.gmm.bernstein.AnalizadorBernstein;
 import es.ilerna.psp.gmm.comunicacion.GestorEntradaSalida;
 import es.ilerna.psp.gmm.entorno.MonitorEntorno;
 import es.ilerna.psp.gmm.procesos.ControlProcesos;
 import es.ilerna.psp.gmm.procesos.EjecutorMultiplataforma;
 import es.ilerna.psp.gmm.procesos.HistorialEjecuciones;
+import es.ilerna.psp.gmm.procesos.Lanzador;
 import es.ilerna.psp.gmm.util.SistemaOperativo;
 import es.ilerna.psp.gmm.util.Teclado;
 
@@ -25,6 +27,8 @@ public class Main {
     public static void main(String[] args) {
         // El ejecutor guarda el directorio de trabajo elegido, por eso se crea una sola vez
         EjecutorMultiplataforma ejecutor = new EjecutorMultiplataforma();
+        // El analizador de Bernstein guarda las tareas introducidas entre visitas al modulo
+        AnalizadorBernstein bernstein = new AnalizadorBernstein();
 
         boolean salir = false;
         while (!salir) {
@@ -48,10 +52,10 @@ public class Main {
                         new GestorEntradaSalida().mostrarMenu();
                         break;
                     case 5:
-                        mostrarPendiente("Procesamiento paralelo de ficheros");
+                        new Lanzador().mostrarMenu();
                         break;
                     case 6:
-                        mostrarPendiente("Analisis de dependencias de Bernstein");
+                        bernstein.mostrarMenu();
                         break;
                     case 7:
                         mostrarPendiente("Simulador de planificacion de CPU");
@@ -68,8 +72,8 @@ public class Main {
                 }
 
                 // Tras cada módulo se espera al usuario antes de volver a pintar el menú
-                // (las opciones 2, 3 y 4 tienen su propio menú con su propia pausa)
-                if (opcion == 1 || opcion >= 5) {
+                // (las opciones 2 a 6 tienen su propio menú con su propia pausa)
+                if (opcion == 1 || opcion >= 7) {
                     Teclado.pausar();
                 }
 

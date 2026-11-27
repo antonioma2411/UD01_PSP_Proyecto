@@ -29,3 +29,4 @@ desktop.ini
 # Ficheros generados al ejecutar el programa (las pruebas se copian a evidencias/)
 logs/*.log
 resultados/*.txt
+datos/texto_grande.txt
